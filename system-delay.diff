@@ -1,0 +1,129 @@
+ conf/battle_athena.conf |  3 +++
+ src/map/battle.cpp      |  3 ++-
+ src/map/battle.hpp      |  3 ++-
+ src/map/pc.hpp          |  3 +++
+ src/map/skill.cpp       | 17 ++++++++++++++++-
+ src/map/skill.hpp       |  4 ++++
+ 6 files changed, 30 insertions(+), 3 deletions(-)
+
+diff --git a/conf/battle_athena.conf b/conf/battle_athena.conf
+index fe03deb7e..ace30dc10 100644
+--- a/conf/battle_athena.conf
++++ b/conf/battle_athena.conf
+@@ -59,3 +59,6 @@ import: conf/battle/misc.conf
+ 
+ //Your custom config goes here.
+ import: conf/import/battle_conf.txt
++
++//Keitenai Delay Settings
++import: conf/import/keitenai/keitenai_MoD.conf
+\ No newline at end of file
+diff --git a/src/map/battle.cpp b/src/map/battle.cpp
+index d69a54116..9ac801d28 100644
+--- a/src/map/battle.cpp
++++ b/src/map/battle.cpp
+@@ -8907,7 +8907,8 @@ static const struct _battle_data {
+ 	{ "hom_idle_no_share",                  &battle_config.hom_idle_no_share,               0,      0,      INT_MAX,        },
+ 	{ "devotion_standup_fix",               &battle_config.devotion_standup_fix,            1,      0,      1,              },
+ 	{ "feature.bgqueue",                    &battle_config.feature_bgqueue,                 1,      0,      1,              },
+-
++//** Keitenai SpeedHack Protection
++#include "../custom/speedhack/battle_init.inc"
+ #include "../custom/battle_config_init.inc"
+ };
+ 
+diff --git a/src/map/battle.hpp b/src/map/battle.hpp
+index 2964fb279..2a1856edc 100644
+--- a/src/map/battle.hpp
++++ b/src/map/battle.hpp
+@@ -564,7 +564,8 @@ struct Battle_Config
+ 	int discount_item_point_shop;
+ 	int update_enemy_position;
+ 	int devotion_rdamage;
+-
++//** Keitenai SpeedHack Protection	
++#include "../custom/speedhack/battle_struct.inc"
+ 	// autotrade persistency
+ 	int feature_autotrade;
+ 	int feature_autotrade_direction;
+diff --git a/src/map/pc.hpp b/src/map/pc.hpp
+index f18cf6a46..58e5e4bd4 100644
+--- a/src/map/pc.hpp
++++ b/src/map/pc.hpp
+@@ -402,6 +402,9 @@ struct map_session_data {
+ 	t_tick ks_floodprotect_tick; // [Kill Steal Protection]
+ 	t_tick equipswitch_tick; // Equip switch
+ 
++//** Keitenai SpeedHack Protection
++#include "../custom/speedhack/pc_struct.inc"
++
+ 	struct s_item_delay {
+ 		unsigned short nameid;
+ 		t_tick tick;
+diff --git a/src/map/skill.cpp b/src/map/skill.cpp
+index 5c830427e..a1c0e0a31 100755
+--- a/src/map/skill.cpp
++++ b/src/map/skill.cpp
+@@ -15733,6 +15733,10 @@ bool skill_check_condition_castbegin(struct map_session_data* sd, uint16 skill_i
+ 		    return false;
+ 	    }
+ 	}
++	
++//** Keitenai SpeedHack Protection
++#include "../speedhack/skill_init.inc"
++	
+ 	// perform skill-specific checks (and actions)
+ 	switch( skill_id ) {
+ 		case RG_GRAFFITI:
+@@ -17293,6 +17297,10 @@ struct s_skill_condition skill_get_requirement(struct map_session_data* sd, uint
+  *------------------------------------------*/
+ int skill_castfix(struct block_list *bl, uint16 skill_id, uint16 skill_lv) {
+ 	double time = skill_get_cast(skill_id, skill_lv);
++	
++	/** Keitenai SpeedHack Protection **/
++	if(BL_CAST(BL_PC, bl) && battle_config.KEITENAI_DELAY_SYSTEM)
++		keitenai_sk_delay(BL_CAST(BL_PC, bl),skill_id,skill_lv,0);
+ 
+ 	nullpo_ret(bl);
+ 
+@@ -17643,10 +17651,17 @@ int skill_delayfix(struct block_list *bl, uint16 skill_id, uint16 skill_lv)
+ 		time = time * battle_config.delay_rate / 100;
+ 
+ 	//ShowInfo("Delay delayfix = %d\n",time);
+-
++	
++//** Keitenai SpeedHack Protection
++	if (battle_config.KEITENAI_DELAY_SYSTEM){
++		struct homun_data *keitenai = BL_CAST(BL_HOM, bl);
++		if(keitenai) time = 200;
++	}
+ 	return max(time,0);
+ }
+ 
++//** Keitenai SpeedHack Protection
++#include "../custom/speedhack/skill_struct.inc"
+ 
+ /*==========================================
+  * Weapon Repair [Celest/DracoRPG]
+diff --git a/src/map/skill.hpp b/src/map/skill.hpp
+index 380925ca9..68f31e891 100644
+--- a/src/map/skill.hpp
++++ b/src/map/skill.hpp
+@@ -36,6 +36,8 @@ struct status_change_entry;
+ #define MAX_SKILL_CRIMSON_MARKER 3 /// Max Crimson Marker targets (RL_C_MARKER)
+ #define SKILL_NAME_LENGTH 31 /// Max Skill Name length
+ #define SKILL_DESC_LENGTH 31 /// Max Skill Desc length
++//** Keitenai SpeedHack Protection
++#define Acceptable_Packet battle_config.MAX_PACKET_COUNTER
+ 
+ /// Constants to identify a skill's nk value (damage properties)
+ /// The NK value applies only to non INF_GROUND_SKILL skills
+@@ -554,6 +556,8 @@ void skill_clear_unitgroup(struct block_list *src);
+ int skill_clear_group(struct block_list *bl, int flag);
+ void ext_skill_unit_onplace(struct skill_unit *unit, struct block_list *bl, t_tick tick);
+ int64 skill_unit_ondamaged(struct skill_unit *unit,int64 damage);
++/** Keitenai SpeedHack Protection **/
++int keitenai_sk_delay( struct map_session_data *sd, uint16 skill_id, uint16 skill_lv,int flag );
+ 
+ // Skill unit visibility [Cydh]
+ void skill_getareachar_skillunit_visibilty(struct skill_unit *su, enum send_target target);
