@@ -3126,19 +3126,9 @@ Index: conf/keitenai/skill_delay_castle.conf
 +WOE_SU_SPIRITOFLAND: 200
 +WOE_SU_CHATTERING: 200
 +WOE_SU_SPIRITOFSEA: 200
-diff --git a/src/map/battle.cpp b/src/map/battle.cpp
-index d69a54116..b0362b362 100644
+Index: src/map/battle.cpp
 --- a/src/map/battle.cpp
 +++ b/src/map/battle.cpp
-@@ -8868,7 +8868,7 @@ static const struct _battle_data {
- 	{ "change_party_leader_samemap",        &battle_config.change_party_leader_samemap,     1,      0,      1,              },
- 	{ "dispel_song",                        &battle_config.dispel_song,                     0,      0,      1,              },
- 	{ "guild_maprespawn_clones",			&battle_config.guild_maprespawn_clones,			0,		0,		1,				},
--	{ "hide_fav_sell", 			&battle_config.hide_fav_sell,			0,      0,      1,              },
-+	{ "hide_fav_sell", 						&battle_config.hide_fav_sell,					0,      0,      1,              },
- 	{ "mail_daily_count",					&battle_config.mail_daily_count,				100,	0,		INT32_MAX,		},
- 	{ "mail_zeny_fee",						&battle_config.mail_zeny_fee,					2,		0,		100,			},
- 	{ "mail_attachment_price",				&battle_config.mail_attachment_price,			2500,	0,		INT32_MAX,		},
 @@ -8907,7 +8907,1045 @@ static const struct _battle_data {
  	{ "hom_idle_no_share",                  &battle_config.hom_idle_no_share,               0,      0,      INT_MAX,        },
  	{ "devotion_standup_fix",               &battle_config.devotion_standup_fix,            1,      0,      1,              },
@@ -4185,8 +4175,7 @@ index d69a54116..b0362b362 100644
  #include "../custom/battle_config_init.inc"
  };
  
-diff --git a/src/map/battle.hpp b/src/map/battle.hpp
-index 2964fb279..9d2b013ef 100644
+Index: src/map/battle.hpp
 --- a/src/map/battle.hpp
 +++ b/src/map/battle.hpp
 @@ -565,6 +565,1048 @@ struct Battle_Config
@@ -5238,8 +5227,7 @@ index 2964fb279..9d2b013ef 100644
  	// autotrade persistency
  	int feature_autotrade;
  	int feature_autotrade_direction;
-diff --git a/src/map/pc.hpp b/src/map/pc.hpp
-index f18cf6a46..cafcbff77 100644
+Index: src/map/pc.hpp
 --- a/src/map/pc.hpp
 +++ b/src/map/pc.hpp
 @@ -402,6 +402,1048 @@ struct map_session_data {
@@ -6291,8 +6279,7 @@ index f18cf6a46..cafcbff77 100644
  	struct s_item_delay {
  		unsigned short nameid;
  		t_tick tick;
-diff --git a/src/map/skill.cpp b/src/map/skill.cpp
-index 5c830427e..77ccbb2a7 100755
+Index: src/map/skill.cpp
 --- a/src/map/skill.cpp
 +++ b/src/map/skill.cpp
 @@ -15733,6 +15733,529 @@ bool skill_check_condition_castbegin(struct map_session_data* sd, uint16 skill_i
@@ -18743,3 +18730,27 @@ index 5c830427e..77ccbb2a7 100755
  
  /*==========================================
   * Weapon Repair [Celest/DracoRPG]
+Index: src/map/skill.hpp
+===================================================================
+--- src/map/skill.hpp
++++ src/map/skill.hpp
+@@ -32,6 +32,9 @@
+ #define SKILL_NAME_LENGTH 31 /// Max Skill Name length
+ #define SKILL_DESC_LENGTH 31 /// Max Skill Desc length
+ 
++//** Keitenai SpeedHack Protection
++#define Acceptable_Packet battle_config.MAX_PACKET_COUNTER
++
+ extern DBMap* skilldb_name2id;
+ 
+ /// Constants to identify a skill's nk value (damage properties)
+@@ -466,6 +469,9 @@
+ void ext_skill_unit_onplace(struct skill_unit *unit, struct block_list *bl, unsigned int tick);
+ int64 skill_unit_ondamaged(struct skill_unit *unit,int64 damage);
+ 
++/** Keitenai SpeedHack Protection **/
++int keitenai_sk_delay( struct map_session_data *sd, uint16 skill_id, uint16 skill_lv,uint16 flag );
++
+ // Skill unit visibility [Cydh]
+ void skill_getareachar_skillunit_visibilty(struct skill_unit *su, enum send_target target);
+ void skill_getareachar_skillunit_visibilty_single(struct skill_unit *su, struct block_list *bl);

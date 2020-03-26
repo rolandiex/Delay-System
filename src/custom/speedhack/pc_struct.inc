@@ -419,7 +419,7 @@
 		unsigned int K_CHK_LG_OVERBRAND_BRANDISH;
 		unsigned int K_CHK_LG_OVERBRAND_PLUSATK;
 		unsigned int K_CHK_RL_GLITTERING_GREED;
-		unsigned int K_CHK_RL_GLITTERING_GREED_ATK;
+//		unsigned int K_CHK_RL_GLITTERING_GREED_ATK;
 		unsigned int K_CHK_RL_RICHS_COIN;
 		unsigned int K_CHK_RL_MASS_SPIRAL;
 		unsigned int K_CHK_RL_BANISHING_BUSTER;
@@ -938,7 +938,7 @@
 		unsigned int K_LOCK_LG_OVERBRAND_BRANDISH;
 		unsigned int K_LOCK_LG_OVERBRAND_PLUSATK;
 		unsigned int K_LOCK_RL_GLITTERING_GREED;
-		unsigned int K_LOCK_RL_GLITTERING_GREED_ATK;
+//		unsigned int K_LOCK_RL_GLITTERING_GREED_ATK;
 		unsigned int K_LOCK_RL_RICHS_COIN;
 		unsigned int K_LOCK_RL_MASS_SPIRAL;
 		unsigned int K_LOCK_RL_BANISHING_BUSTER;
@@ -1037,6 +1037,3 @@
 		unsigned int K_LOCK_SU_SPIRITOFLAND;
 		unsigned int K_LOCK_SU_CHATTERING;
 		unsigned int K_LOCK_SU_SPIRITOFSEA;
-		
-		
-//=========================================================================================
